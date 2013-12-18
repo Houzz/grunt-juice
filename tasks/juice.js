@@ -10,7 +10,8 @@
 
 module.exports = function(grunt) {
 
-  var juice = require('juice');
+  var juice = require('juice'),
+      path = require('path');
 
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
@@ -53,10 +54,11 @@ module.exports = function(grunt) {
         // Write the destination file.
         grunt.file.write(f.dest, juice.inlineContent(html, css));
 
+        // Print a success message.
+        grunt.log.writeln('File "' + f.dest + '" created.');
+
       });
 
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
     });
   });
 
