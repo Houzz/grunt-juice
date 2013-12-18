@@ -40,15 +40,29 @@ module.exports = function(grunt) {
 
       var html = '',
           css = '',
+          dir = '',
           errors = 0;
 
       src.forEach(function(filepath) {
         html = grunt.file.read(filepath);
 
-        if (options.css) {
-          // Match up the source file based on filename (minus extension) (1 css : 1 html)
-        } else {
+        dir = path.dirname(filepath);
+
+        if (options.css && (typeof options.css === 'string')) {
           // Match a specific file pattern for the css (1 css : many html files)
+          var cssfile = grunt.file.expand({
+            matchBase: true,
+            cwd: dir
+          }, options.css);
+          if (cssfile.length !== 1) { // We should only find 1 match
+            grunt.verbose.writeln('Found ' + cssfile.length + ' css files matching pattern ' + options.css + '.');
+            errors += 1;
+            return false;
+          }
+          // grab the contents of the css file
+          css = grunt.file.read(path.join(dir, cssfile[0]));
+        } else {
+          // Match up the source file based on filename (minus extension) (1 css : 1 html)
         }
 
         // Write the destination file.
@@ -58,6 +72,10 @@ module.exports = function(grunt) {
         grunt.log.writeln('File "' + f.dest + '" created.');
 
       });
+
+      if (errors > 0) {
+        grunt.log.writeln('Completed, but with ' + errors.toString().red + ' error(s).');
+      }
 
     });
   });
